@@ -140,11 +140,17 @@ function partneremailgreeting_relationshipchange(PostEvent $event) {
                              '=',
                              $event->object->contact_id_b,
                            ])
+                           ->addWhere('is_deceased', '=', FALSE)
+                           ->addWhere('is_deleted', '=', FALSE)
+                           ->addWhere('do_not_email', '=', FALSE)
+                           ->addWhere('do_not_trade', '=', FALSE)
+                           ->addWhere('is_opt_out', '=', FALSE)
                            ->setLimit(2)
                            ->execute()->getArrayCopy();
 
+        // If either contact does not meet the criteria then it will be excluded from the results and contact count < 2
         // Check that the first name is set for both contacts before setting the customised greeting
-        if ($contacts[0]['first_name'] && $contacts[1]['first_name']) {
+        if (count($contacts) == 2 && $contacts[0]['first_name'] && $contacts[1]['first_name']) {
           Contact::update()
                  ->addValue('email_greeting_custom', 'Dear ' . $contacts[0]['first_name'] . ' and ' . $contacts[1]['first_name'])
                  ->addValue('email_greeting_id:name', 'Customized')
@@ -163,25 +169,26 @@ function partneremailgreeting_relationshipchange(PostEvent $event) {
           // If the first name is not set for either contact then reset to the standard greeting
           $custom_greeting = FALSE;
         }
-      }
 
-      if ($relationship_match && !$custom_greeting) {
-        Contact::update()
-               ->addValue('email_greeting_id:name', 'Dear {contact.first_name}')
-               ->addClause('OR', [
-                 'id',
-                 '=',
-                 $event->object->contact_id_a,
-               ], [
-                 'id',
-                 '=',
-                 $event->object->contact_id_b,
-               ])
-               ->execute();
+        if ($relationship_match && !$custom_greeting) {
+          Contact::update()
+                 ->addValue('email_greeting_id:name', 'Dear {contact.first_name}')
+                 ->addClause('OR', [
+                   'id',
+                   '=',
+                   $event->object->contact_id_a,
+                 ], [
+                   'id',
+                   '=',
+                   $event->object->contact_id_b,
+                 ])
+                 ->execute();
+        }
       }
     }
   }
-  catch (API_Exception $e) {
+  catch
+  (API_Exception $e) {
     $errorMessage = $e->getMessage();
     CRM_Core_Error::debug_var('partneremailgreeting::partneremailgreeting_relationshipchange', $errorMessage);
   }

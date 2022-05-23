@@ -34,13 +34,8 @@ function civicrm_api3_job_Partneremailgreeting($params) {
 
     $relationships = Relationship::get()
                                  ->addWhere('is_active', '=', TRUE)
-                                 ->addClause('OR', [
-                                   'relationship_type_id:name',
-                                   '=',
+                                 ->addWhere('relationship_type_id:name', 'IN', [
                                    'Partner of',
-                                 ], [
-                                   'relationship_type_id:name',
-                                   '=',
                                    'Spouse of',
                                  ])
                                  ->execute();
@@ -56,11 +51,17 @@ function civicrm_api3_job_Partneremailgreeting($params) {
                            '=',
                            $relationship['contact_id_b'],
                          ])
+                         ->addWhere('is_deceased', '=', FALSE)
+                         ->addWhere('is_deleted', '=', FALSE)
+                         ->addWhere('do_not_email', '=', FALSE)
+                         ->addWhere('do_not_trade', '=', FALSE)
+                         ->addWhere('is_opt_out', '=', FALSE)
                          ->setLimit(2)
                          ->execute()->getArrayCopy();
 
+      // If either contact does not meet the criteria then it will be excluded from the results and contact count < 2
       // Check that the first name is set for both contacts before setting the customised greeting
-      if ($contacts[0]['first_name'] && $contacts[1]['first_name']) {
+      if (count($contacts) == 2 && $contacts[0]['first_name'] && $contacts[1]['first_name']) {
         Contact::update()
                ->addValue('email_greeting_custom', 'Dear ' . $contacts[0]['first_name'] . ' and ' . $contacts[1]['first_name'])
                ->addValue('email_greeting_id:name', 'Customized')

@@ -14,8 +14,8 @@
     <url desc="Support">https://github.com/agileware/au.com.agileware.partneremailgreeting</url>
     <url desc="Licensing">http://www.gnu.org/licenses/agpl-3.0.html</url>
   </urls>
-  <releaseDate>2022-05-17</releaseDate>
-  <version>1.0</version>
+  <releaseDate>2022-05-23</releaseDate>
+  <version>1.1</version>
   <develStage>stable</develStage>
   <compatibility>
     <ver>5.0</ver>
