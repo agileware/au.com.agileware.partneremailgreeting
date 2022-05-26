@@ -29,6 +29,8 @@ function _civicrm_api3_job_Partneremailgreeting_spec(&$spec) {
  */
 function civicrm_api3_job_Partneremailgreeting($params) {
   try {
+    // Set max_execution_time to 30 mins to allow for large contact lists to process
+    ini_set('max_execution_time', '1800');
 
     // Get all active Partner and Spouse relationships, update email greeting for each contact in the relationship
 
