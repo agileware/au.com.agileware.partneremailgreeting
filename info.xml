@@ -18,15 +18,15 @@
   <version>1.1</version>
   <develStage>stable</develStage>
   <compatibility>
-    <ver>5.0</ver>
+    <ver>5.27</ver>
   </compatibility>
-  <comments></comments>
+  <comments/>
   <classloader>
     <psr4 prefix="Civi\" path="Civi"/>
   </classloader>
   <civix>
     <namespace>CRM/Partneremailgreeting</namespace>
-    <format>22.05.0</format>
+    <format>25.01.1</format>
     <angularModule>crmPartneremailgreeting</angularModule>
   </civix>
   <mixins>
